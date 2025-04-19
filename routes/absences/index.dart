@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:absense_manager_api/src/data/absence_repository.dart';
+import 'package:absence_manager_api/src/data/absence_repository.dart';
 import 'package:dart_frog/dart_frog.dart';
 
 final _repo = AbsenceRepository();
