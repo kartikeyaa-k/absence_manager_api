@@ -1,16 +1,31 @@
-# See https://www.dartlang.org/guides/libraries/private-files
-
-# Files and directories created by the Operating System
+# Operating System files
 .DS_Store
 
-# Files and directories created by pub
+# Dart/Pub artifacts
 .dart_tool/
 .packages
 pubspec.lock
 
-# Files and directories created by dart_frog
+# Dart Frog build artifacts
 build/
-.dart_frog
+.dart_frog/
 
-# Test related files
+# AOT‑compiled server binary
+/server
+
+# Test coverage
 coverage/
+
+# Logs
+*.log
+
+# IDE/editor settings
+.idea/
+.vscode/
+
+# Node modules (if you ever add tooling)
+/node_modules/
+
+# Temporary files
+*.tmp
+*.swp
