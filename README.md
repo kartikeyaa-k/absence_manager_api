@@ -84,9 +84,8 @@ Supports query params like:
 ---
 
 ## 🌐 Live API Deployment (Render) 
-**TODO**: Replace with actual Render URL once deployed.
 
-**Base URL**: `https://absence-manager-api.onrender.com`
+**Base URL**: `https://absence-manager-api-4245.onrender.com/absences`
 
 ### Available Endpoints:
 
@@ -94,6 +93,7 @@ Supports query params like:
   - Optional query params:
     - `page` (default: 1)
     - `limit` (default: 10)
+    - `userId` 
 
 - `GET /members`
   - Returns all members
