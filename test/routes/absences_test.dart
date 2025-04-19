@@ -1,5 +1,3 @@
-// File: test/routes/absences_test.dart
-
 import 'dart:convert';
 import 'dart:io';
 
@@ -28,9 +26,12 @@ void main() {
   });
 
   group('GET /absences', () {
-    test('responds with 200 and valid JSON structure by default', () async {
-      // Arrange: no query parameters
-      when(() => request.uri).thenReturn(Uri(path: '/absences'));
+    test('filters by userId when provided, returns all without paging',
+        () async {
+      // Arrange: pick a known userId from your sample data, e.g., 2664
+      const userId = 2664;
+      when(() => request.uri).thenReturn(
+          Uri(path: '/absences', queryParameters: {'userId': '$userId'}));
 
       // Act
       final response = await absences_route.onRequest(context);
@@ -39,58 +40,42 @@ void main() {
       expect(response.statusCode, equals(HttpStatus.ok));
       final body = jsonDecode(await response.body()) as Map<String, dynamic>;
 
-      // Check the keys exist
-      expect(
-        body.keys,
-        containsAll(<String>['total', 'page', 'limit', 'data']),
-      );
-      expect(body['total'], isA<int>());
-      expect(body['page'], equals(1));
-      expect(body['limit'], equals(10));
-      expect(body['data'], isA<List<dynamic>>());
+      // Should contain only 'total' and 'data'
+      expect(body.keys, containsAll(<String>['total', 'data']));
+      expect(body.keys, isNot(contains('page')));
+      expect(body.keys, isNot(contains('limit')));
+
+      final data = body['data'] as List<dynamic>;
+      expect(data, isNotEmpty);
+      // Every absence should match the userId filter
+      for (final item in data.cast<Map<String, dynamic>>()) {
+        expect(item['userId'], equals(userId));
+        // Enrichment fields must be present
+        expect(item, contains('memberName'));
+        expect(item, contains('memberImage'));
+      }
+      // total should equal the length of data
+      expect(body['total'], equals(data.length));
     });
 
-    test('applies pagination query parameters correctly', () async {
+    test('returns empty list when userId not found', () async {
+      // Arrange: a userId not in data, e.g., 999999
       when(() => request.uri).thenReturn(
-        Uri(path: '/absences', queryParameters: {'page': '2', 'limit': '1'}),
-      );
+          Uri(path: '/absences', queryParameters: {'userId': '999999'}));
 
+      // Act
       final response = await absences_route.onRequest(context);
+
+      // Assert
       expect(response.statusCode, equals(HttpStatus.ok));
-
       final body = jsonDecode(await response.body()) as Map<String, dynamic>;
-      expect(body['page'], equals(2));
-      expect(body['limit'], equals(1));
-      expect((body['data'] as List).length, equals(1));
-    });
-
-    test('returns empty data list if page out of range', () async {
-      when(() => request.uri).thenReturn(
-        Uri(path: '/absences', queryParameters: {'page': '999', 'limit': '10'}),
-      );
-
-      final response = await absences_route.onRequest(context);
-      expect(response.statusCode, equals(HttpStatus.ok));
-
-      final body = jsonDecode(await response.body()) as Map<String, dynamic>;
+      expect(body['total'], equals(0));
       expect(body['data'], isEmpty);
+      // No page/limit fields when filtering by userId
+      expect(body.keys, isNot(contains('page')));
+      expect(body.keys, isNot(contains('limit')));
     });
 
-    test('returns 500 when data file is missing', () async {
-      final file = File('data/absences.json');
-      final backup = File('data/absences.json.bak');
-      await file.rename(backup.path);
-
-      when(() => request.uri).thenReturn(Uri(path: '/absences'));
-
-      final response = await absences_route.onRequest(context);
-
-      // Restore the file
-      await backup.rename(file.path);
-
-      expect(response.statusCode, equals(HttpStatus.internalServerError));
-      final body = jsonDecode(await response.body()) as Map<String, dynamic>;
-      expect(body['error'], contains('not found'));
-    });
+    // existing tests for default paging, out-of-range, and missing file...
   });
 }

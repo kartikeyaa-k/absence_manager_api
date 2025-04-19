@@ -1,3 +1,2 @@
-# dart_frog.yaml
 middleware:
   - ./middleware/logger.dart
