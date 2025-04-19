@@ -4,11 +4,13 @@ This is a lightweight backend service built using **Dart Frog**, designed to ser
 
 ## 🧱 Features
 
-- REST API endpoints for absences and members
-- Supports pagination (`/absences?page=1&limit=10`)
-- Serves mock JSON data from static files
-- Docker-ready for cloud deployment (Render)
-- Uses middleware for logging all incoming requests
+- REST API endpoints for absences and members  
+- Supports pagination (`/absences?page=1&limit=10`)  
+- Supports filtering by `userId` (`/absences?userId=<id>`)  
+- Returns enriched absence records with `memberName` and `memberImage`  
+- Serves mock JSON data from static files  
+- Docker-ready for cloud deployment (Render)  
+- Logging middleware for all incoming requests 
 
 ---
 
@@ -19,20 +21,26 @@ absence_manager_api/
 ├── data/
 │   ├── absences.json          # Mock data for absences
 │   └── members.json           # Mock data for members
+├── lib/
+│   └── src/
+│       └── data/
+│           └── absence_repository.dart  # Loads, paginates, and enriches data
 ├── middleware/
 │   └── logger.dart            # Logs method, path, status code, response time
 ├── routes/
 │   ├── absences/
-│   │   └── index.dart         # GET /absences with pagination
+│   │   └── index.dart         # GET /absences with pagination, filtering, enrichment
 │   └── members/
 │       └── index.dart         # GET /members
 ├── test/
-│   └── routes/                # Optional: tests for each route
+│   └── routes/                # Tests for each route
+│       ├── absences_test.dart
+│       └── members_test.dart
 ├── Dockerfile                 # Deployment setup
-├── pubspec.yaml               # Dart dependencies
-├── dart_frog.yaml             # Middleware config
+├── dart_frog.yaml             # Middleware configuration
 ├── analysis_options.yaml      # Linting and code quality rules
-└── README.md                  # You are here 📌
+├── pubspec.yaml               # Dart dependencies (package: absence_manager_api)
+└── README.md                  # You are here
 ```
 
 ---
@@ -70,6 +78,7 @@ dart_frog dev
 Supports query params like:
 ```
 /absences?page=2&limit=5
+/absences?userId=2664
 ```
 
 ---
