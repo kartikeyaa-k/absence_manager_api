@@ -20,11 +20,23 @@ Future<Response> onRequest(RequestContext context) async {
     final page = int.tryParse(params['page'] ?? '') ?? 1;
     final limit = int.tryParse(params['limit'] ?? '') ?? 10;
     final userId = int.tryParse(params['userId'] ?? '');
+    final type = params['type'];
+    final startDate =
+        params['startDate'] != null && params['startDate'].toString().isNotEmpty
+            ? DateTime.tryParse(params['startDate'].toString())
+            : null;
+    final endDate =
+        params['endDate'] != null && params['endDate'].toString().isNotEmpty
+            ? DateTime.tryParse(params['endDate'].toString())
+            : null;
 
     final result = await _repo.fetchPaginatedEnriched(
       page: page,
       limit: limit,
       userId: userId,
+      type: type,
+      startDate: startDate,
+      endDate: endDate,
     );
 
     return Response.json(body: result);
