@@ -2,7 +2,6 @@
 
 A lightweight, testable API built with [`dart_frog`](https://pub.dev/packages/dart_frog) that serves enriched and paginated absence data. It reads from local JSON files and supports filtering by user, type, and date range — ideal for demo apps or prototyping HR workflows.
 
----
 
 ## 🚀 Features
 
@@ -19,7 +18,6 @@ A lightweight, testable API built with [`dart_frog`](https://pub.dev/packages/da
 - 🧱 **Modular Dart Frog structure**:
   - Routes, Middleware, Repository, and Data
 
----
 
 ## 🗂 Project Structure
 
@@ -44,7 +42,6 @@ test/
     └── members_test.dart
 ```
 
----
 
 ## ⚙️ Installation & Local Setup
 
@@ -77,7 +74,6 @@ Ensure the following files exist in `data/` folder:
 - `absences.json`
 - `members.json`
 
----
 
 ## 🔌 Integration with Crewmeister App
 
@@ -87,7 +83,6 @@ In Crewmeister Flutter app, pass the local API base URL using `--dart-define`:
 flutter run --dart-define=BASE_URL=http://localhost:8080
 ```
 
----
 
 ## 📦 Query Parameters
 
@@ -102,7 +97,6 @@ flutter run --dart-define=BASE_URL=http://localhost:8080
 | `startDate`| string | ISO string for date range filter (optional)|
 | `endDate`  | string | ISO string for date range filter (optional)|
 
----
 
 ## ✅ Running Tests
 
