@@ -71,7 +71,7 @@ class AbsenceRepository {
         final aDate = DateTime.tryParse(a['startDate'] as String? ?? '');
         final bDate = DateTime.tryParse(b['startDate'] as String? ?? '');
         if (aDate == null || bDate == null) return 0;
-        return bDate.compareTo(aDate);
+        return aDate.compareTo(bDate);
       });
 
     final total = filtered.length;
