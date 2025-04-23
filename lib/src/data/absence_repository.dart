@@ -66,7 +66,13 @@ class AbsenceRepository {
     var filtered = allAbsences;
     filtered = _filterByUser(filtered, userId);
     filtered = _filterByType(filtered, type);
-    filtered = _filterByDateRange(filtered, startDate, endDate);
+    filtered = _filterByDateRange(filtered, startDate, endDate)
+      ..sort((a, b) {
+        final aDate = DateTime.tryParse(a['startDate'] as String? ?? '');
+        final bDate = DateTime.tryParse(b['startDate'] as String? ?? '');
+        if (aDate == null || bDate == null) return 0;
+        return bDate.compareTo(aDate);
+      });
 
     final total = filtered.length;
     final paginated = _applyPagination(filtered, page, limit);
