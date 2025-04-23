@@ -26,56 +26,88 @@ void main() {
   });
 
   group('GET /absences', () {
-    test('filters by userId when provided, returns all without paging',
-        () async {
-      // Arrange: pick a known userId from your sample data, e.g., 2664
+    test('filters by userId and applies pagination', () async {
       const userId = 2664;
       when(() => request.uri).thenReturn(
-          Uri(path: '/absences', queryParameters: {'userId': '$userId'}));
+        Uri(
+          path: '/absences',
+          queryParameters: {
+            'userId': '$userId',
+            'page': '1',
+            'limit': '10',
+          },
+        ),
+      );
 
-      // Act
       final response = await absences_route.onRequest(context);
 
-      // Assert
       expect(response.statusCode, equals(HttpStatus.ok));
       final body = jsonDecode(await response.body()) as Map<String, dynamic>;
 
-      // Should contain only 'total' and 'data'
-      expect(body.keys, containsAll(<String>['total', 'data']));
-      expect(body.keys, isNot(contains('page')));
-      expect(body.keys, isNot(contains('limit')));
+      expect(body.keys, containsAll(['total', 'page', 'limit', 'data']));
+      expect(body['page'], equals(1));
+      expect(body['limit'], equals(10));
 
       final data = body['data'] as List<dynamic>;
       expect(data, isNotEmpty);
-      // Every absence should match the userId filter
+
       for (final item in data.cast<Map<String, dynamic>>()) {
         expect(item['userId'], equals(userId));
-        // Enrichment fields must be present
         expect(item, contains('memberName'));
         expect(item, contains('memberImage'));
       }
-      // total should equal the length of data
-      expect(body['total'], equals(data.length));
+
+      // Verify sorting ascending by startDate
+      final dates =
+          // ignore: avoid_dynamic_calls
+          data.map((d) => DateTime.parse(d['startDate'].toString())).toList();
+      for (int i = 1; i < dates.length; i++) {
+        expect(
+          dates[i].isAfter(dates[i - 1]) ||
+              dates[i].isAtSameMomentAs(dates[i - 1]),
+          isTrue,
+        );
+      }
     });
 
     test('returns empty list when userId not found', () async {
-      // Arrange: a userId not in data, e.g., 999999
       when(() => request.uri).thenReturn(
-          Uri(path: '/absences', queryParameters: {'userId': '999999'}));
+        Uri(
+          path: '/absences',
+          queryParameters: {
+            'userId': '999999',
+            'page': '1',
+            'limit': '10',
+          },
+        ),
+      );
 
-      // Act
       final response = await absences_route.onRequest(context);
-
-      // Assert
-      expect(response.statusCode, equals(HttpStatus.ok));
       final body = jsonDecode(await response.body()) as Map<String, dynamic>;
+
+      expect(response.statusCode, equals(HttpStatus.ok));
       expect(body['total'], equals(0));
       expect(body['data'], isEmpty);
-      // No page/limit fields when filtering by userId
-      expect(body.keys, isNot(contains('page')));
-      expect(body.keys, isNot(contains('limit')));
     });
 
-    // existing tests for default paging, out-of-range, and missing file...
+    test('returns paginated result without filters', () async {
+      when(() => request.uri).thenReturn(
+        Uri(
+          path: '/absences',
+          queryParameters: {
+            'page': '1',
+            'limit': '5',
+          },
+        ),
+      );
+
+      final response = await absences_route.onRequest(context);
+      final body = jsonDecode(await response.body()) as Map<String, dynamic>;
+
+      expect(response.statusCode, equals(HttpStatus.ok));
+      expect(body['page'], equals(1));
+      expect(body['limit'], equals(5));
+      expect(body['data'], isA<List<dynamic>>());
+    });
   });
 }
