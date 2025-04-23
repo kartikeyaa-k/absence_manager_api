@@ -31,7 +31,8 @@ void main() {
       // Arrange: pick a known userId from your sample data, e.g., 2664
       const userId = 2664;
       when(() => request.uri).thenReturn(
-          Uri(path: '/absences', queryParameters: {'userId': '$userId'}));
+        Uri(path: '/absences', queryParameters: {'userId': '$userId'}),
+      );
 
       // Act
       final response = await absences_route.onRequest(context);
@@ -61,7 +62,8 @@ void main() {
     test('returns empty list when userId not found', () async {
       // Arrange: a userId not in data, e.g., 999999
       when(() => request.uri).thenReturn(
-          Uri(path: '/absences', queryParameters: {'userId': '999999'}));
+        Uri(path: '/absences', queryParameters: {'userId': '999999'}),
+      );
 
       // Act
       final response = await absences_route.onRequest(context);
