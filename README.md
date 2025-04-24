@@ -1,4 +1,4 @@
-# ️ Absence Manager API
+# 🗂️ Absence Manager API
 
 A lightweight, testable API built with [`dart_frog`](https://pub.dev/packages/dart_frog) that serves enriched and paginated absence data. It reads from local JSON files and supports filtering by user, type, and date range.
 
