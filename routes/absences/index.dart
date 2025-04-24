@@ -39,7 +39,11 @@ Future<Response> onRequest(RequestContext context) async {
       endDate: endDate,
     );
 
-    return Response.json(body: result);
+    return Response.json(body: result, headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type',
+    },);
   } catch (e) {
     return Response.json(
       statusCode: HttpStatus.internalServerError,
